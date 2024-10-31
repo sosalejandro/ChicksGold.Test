@@ -8,37 +8,16 @@ using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-    options.Providers.Add<BrotliCompressionProvider>();
-    options.Providers.Add<GzipCompressionProvider>();
-});
-
-builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-{
-    options.Level = CompressionLevel.Fastest;
-});
-
-builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-{
-    options.Level = CompressionLevel.Fastest;
-});
+AddCompression(builder);
 
 builder.Services.AddMemoryCache();
 
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+RegisterServices(builder);
 
-builder.Services.AddScoped<IServiceManager, ServiceManager>();
-builder.Services.AddScoped<IBucketChallengeService, BucketChallengeService>();
-builder.Services.AddScoped<ValidationFilterAttribute>();
-
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ValidationFilterAttribute>();
-}).AddApplicationPart(typeof(ChicksGold.Test.Presentation.AssemblyReference).Assembly);
+RegisterControllers(builder);
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -68,6 +47,42 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static void AddCompression(WebApplicationBuilder builder)
+{
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+    });
+
+    builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+}
+
+static void RegisterServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddScoped<IServiceManager, ServiceManager>();
+    builder.Services.AddScoped<IBucketChallengeService, BucketChallengeService>();
+}
+
+static void RegisterControllers(WebApplicationBuilder builder)
+{
+    builder.Services.AddScoped<ValidationFilterAttribute>();
+
+    builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<ValidationFilterAttribute>();
+    }).AddApplicationPart(typeof(ChicksGold.Test.Presentation.AssemblyReference).Assembly);
+}
 
 public partial class Program
 {
