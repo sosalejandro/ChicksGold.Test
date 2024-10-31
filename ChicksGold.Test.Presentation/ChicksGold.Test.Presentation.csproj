@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChicksGold.Test.Domain\ChicksGold.Test.Domain.csproj" />
+    <ProjectReference Include="..\ChicksGold.Test.Service.Abstractions\ChicksGold.Test.Service.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,15 +1,19 @@
 using ChicksGold.Test.Domain;
 using ChicksGold.Test.Domain.Enums;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace ChicksGold.Test.Service.Tests;
 
 public class BucketChallengeServiceTests
 {
     private readonly BucketChallengeService _service;
+    private readonly Mock<ILogger<BucketChallengeService>> _mockLogger;
 
     public BucketChallengeServiceTests()
     {
-        _service = new BucketChallengeService();
+        _mockLogger = new Mock<ILogger<BucketChallengeService>>();
+        _service = new BucketChallengeService(_mockLogger.Object);
     }
 
     public static IEnumerable<object[]> GetTestCases()

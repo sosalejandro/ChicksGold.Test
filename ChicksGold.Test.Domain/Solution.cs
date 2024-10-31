@@ -9,5 +9,5 @@ public class Solution(List<Step> steps)
     /// <summary>
     /// Gets the list of steps to achieve the target volume.
     /// </summary>
-    public List<Step> Steps { get; } = steps;
+    public List<Step> Steps { get; set; } = steps;
 }

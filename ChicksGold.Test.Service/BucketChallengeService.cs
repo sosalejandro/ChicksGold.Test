@@ -1,13 +1,20 @@
 using ChicksGold.Test.Domain.Enums;
 using ChicksGold.Test.Domain;
-
 using ChicksGold.Test.Service.Abstractions;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Service to solve the bucket challenge problem.
 /// </summary>
 public class BucketChallengeService : IBucketChallengeService
 {
+    private readonly ILogger<BucketChallengeService> _logger;
+
+    public BucketChallengeService(ILogger<BucketChallengeService> logger)
+    {
+        _logger = logger;
+    }
+
     /// <summary>
     /// Solves the bucket challenge problem for the given bucket capacities and target volume.
     /// </summary>
@@ -18,6 +25,8 @@ public class BucketChallengeService : IBucketChallengeService
     /// <exception cref="NoAvailableSolutionException">Thrown when no solution is available for the given input.</exception>
     public Solution Solve(int bucket1Capacity, int bucket2Capacity, int targetVolume)
     {
+        _logger.LogInformation("Starting to solve the bucket challenge with bucket1Capacity: {Bucket1Capacity}, bucket2Capacity: {Bucket2Capacity}, targetVolume: {TargetVolume}", bucket1Capacity, bucket2Capacity, targetVolume);
+
         var visited = new HashSet<State>();
         var queue = new Queue<(State state, List<Step> steps)>();
         queue.Enqueue((new State(0, 0), new List<Step>()));
@@ -25,15 +34,18 @@ public class BucketChallengeService : IBucketChallengeService
         while (queue.Count > 0)
         {
             var (currentState, steps) = queue.Dequeue();
+            _logger.LogDebug("Processing state: {CurrentState}", currentState);
 
             if (currentState.Bucket1Volume == targetVolume || currentState.Bucket2Volume == targetVolume)
             {
                 steps.Last().SetStatusSolved();
+                _logger.LogInformation("Solution found with steps count: {Steps}", steps.Count);
                 return new Solution(steps);
             }
 
             if (visited.Contains(currentState))
             {
+                _logger.LogDebug("State {CurrentState} already visited", currentState);
                 continue;
             }
 
@@ -50,10 +62,12 @@ public class BucketChallengeService : IBucketChallengeService
                         new(steps.Count + 1, nextState.Bucket1Volume, nextState.Bucket2Volume, action)
                     };
                     queue.Enqueue((nextState, newSteps));
+                    _logger.LogDebug("Enqueued new state: {NextState} with action: {Action}", nextState, action);
                 }
             }
         }
 
+        _logger.LogWarning("No solution available for the given input: bucket1Capacity: {Bucket1Capacity}, bucket2Capacity: {Bucket2Capacity}, targetVolume: {TargetVolume}", bucket1Capacity, bucket2Capacity, targetVolume);
         throw new NoAvailableSolutionException("No solution available for the given input.");
     }
 
