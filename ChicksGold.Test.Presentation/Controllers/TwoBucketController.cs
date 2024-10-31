@@ -42,7 +42,7 @@ public class TwoBucketController : ControllerBase
     [SwaggerResponse(400, "Bad request due to invalid input or no available solution", typeof(string))]
     [SwaggerResponse(422, "Unprocessable entity due to validation errors", typeof(ValidationProblemDetails))]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
-    [ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
     public IActionResult SolveTwoBucketProblem([FromBody] TwoBucketProblemDto dto)
     {
         _logger.LogInformation("Received request to solve two bucket problem with XCapacity: {XCapacity}, YCapacity: {YCapacity}, ZAmountWanted: {ZAmountWanted}", dto.XCapacity, dto.YCapacity, dto.ZAmountWanted);
